@@ -31,6 +31,8 @@ import org.slf4j.event.*
 fun Application.configureRouting() {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
+            call.application.environment.log.error("Unhandled exception", cause)
+
             call.respondText(text = "500: $cause" , status = HttpStatusCode.InternalServerError)
         }
     }

@@ -10,14 +10,12 @@ import java.time.Instant
 interface RefreshTokenDao {
 
     @SqlUpdate("""
-        INSERT INTO refresh_tokens (id, user_id, token, expires_at)
-        VALUES (:id, :userId, :token, :expiresAt)
+        INSERT INTO refresh_tokens (user_id, token, expires_at)
+        VALUES (:userId, :token, :expiresAt)
     """)
-    @GetGeneratedKeys
     fun insert(
         @Bind("userId") userId: Int,
         @Bind("token") token: String,
-        @Bind("createdAt") createdAt: Instant,
         @Bind("expiresAt") expiresAt: Instant,
     )
 

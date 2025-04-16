@@ -30,49 +30,46 @@ class DefaultAuthRepository(
     }
 
     override fun login(username: String, password: String): Tokens {
-        val error = IllegalArgumentException("invalid username or password")
-
-        val user = userDao.findByUsername(username) ?: throw error
-        val storedPassHash = user.passwordHash
+        val user = userDao.findByUsername(username) ?: throw IllegalArgumentException("couldn't find user")
+        val storedPassHash = user.password_hash
         val result = BCrypt.verifyer().verify(password.toCharArray(), storedPassHash)
 
         return if (result.verified) {
-            val access = jwtService.create(username, user.isAdmin)
+            val access = jwtService.create(username, user.is_admin)
             val refresh = UUID.randomUUID().toString()
 
             val expiry = Instant.ofEpochMilli(System.currentTimeMillis() + 30L * 24 * 60 * 60 * 1000)
-            refreshTokenDao.insert(user.id, refresh, Instant.now(), expiry)
+            refreshTokenDao.insert(user.id, refresh, expiry)
 
             Tokens(access, refresh)
         } else {
-            throw error
+            throw IllegalArgumentException("wrong password")
         }
     }
 
     override fun refreshToken(refreshToken: String): Tokens {
-        val error = IllegalArgumentException("couldn't refresh token")
-        val stored = refreshTokenDao.findByToken(refreshToken) ?: throw error
-        if (stored.expiresAt.isBefore(Instant.now())) throw error
+        val stored = refreshTokenDao.findByToken(refreshToken)
+            ?: throw IllegalArgumentException("couldn't find refresh token")
+        if (stored.expires_at.isBefore(Instant.now())) throw IllegalArgumentException("refresh token has expired")
 
-        val user = userDao.findById(stored.userId) ?: throw error
+        val user = userDao.findById(stored.user_id) ?: throw IllegalArgumentException("couldn't find user")
 
         refreshTokenDao.delete(refreshToken)
 
         val newRefreshToken = UUID.randomUUID().toString()
         val expiry = Instant.ofEpochMilli(System.currentTimeMillis() + 30L * 24 * 60 * 60 * 1000)
-        refreshTokenDao.insert(user.id, newRefreshToken, Instant.now(), expiry)
+        refreshTokenDao.insert(user.id, newRefreshToken, expiry)
 
-        val newAccessToken = jwtService.create(user.username, user.isAdmin)
+        val newAccessToken = jwtService.create(user.username, user.is_admin)
 
         return Tokens(newAccessToken, newRefreshToken)
     }
 
     override fun logout(username: String, refreshToken: String) {
-        val error = IllegalArgumentException("couldn't logout")
-        val stored = refreshTokenDao.findByToken(refreshToken) ?: throw error
+        val stored = refreshTokenDao.findByToken(refreshToken) ?: throw IllegalArgumentException("couldn't find refresh token")
 
-        val user = userDao.findById(stored.userId) ?: throw error
-        if (user.username != username) throw error
+        val user = userDao.findById(stored.user_id) ?: throw IllegalArgumentException("couldn't find user")
+        if (user.username != username) throw IllegalArgumentException("username doesn't match refreshToken's username")
 
         refreshTokenDao.delete(refreshToken)
     }

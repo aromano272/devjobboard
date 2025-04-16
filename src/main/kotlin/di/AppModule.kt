@@ -31,6 +31,11 @@ fun appModule(application: Application) = module {
         jdbi.onDemand(UserDao::class.java)
     }
 
+    single<RefreshTokenDao> {
+        val jdbi: Jdbi = get()
+        jdbi.onDemand(RefreshTokenDao::class.java)
+    }
+
     single<JwtService> {
         DefaultJwtService(application.environment.config)
     }
@@ -38,7 +43,8 @@ fun appModule(application: Application) = module {
     single<AuthRepository> {
         DefaultAuthRepository(
             jwtService = get(),
-            userDao = get()
+            userDao = get(),
+            refreshTokenDao = get(),
         )
     }
 }

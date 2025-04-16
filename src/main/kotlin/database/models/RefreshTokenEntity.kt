@@ -1,12 +1,11 @@
 package com.andreromano.devjobboard.database.models
 
 import java.time.Instant
-import java.util.UUID
 
 data class RefreshTokenEntity(
-    val id: UUID,
-    val userId: Int,
+    val id: Int,
+    val user_id: Int,
     val token: String,
-    val expiresAt: Instant,
-    val createdAt: Instant
+    val expires_at: Instant,
+    val created_at: Instant
 )

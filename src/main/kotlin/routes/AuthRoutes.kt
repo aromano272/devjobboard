@@ -36,17 +36,18 @@ data class LogoutRequest(
 fun Route.authRoutes(
     authRepository: AuthRepository
 ) {
-    route("auth") {
+    route("/auth") {
         post("/register") {
             val request = call.receive<RegisterRequest>()
 
-            authRepository.registerAndLogin(request.username, request.password, request.isAdmin)
+            val tokens = authRepository.registerAndLogin(request.username, request.password, request.isAdmin)
+            call.respond(tokens)
         }
 
         post("/login") {
             val user = call.receive<LoginRequest>()
-            val token = authRepository.login(user.username, user.password)
-            call.respond(mapOf("token" to token))
+            val tokens = authRepository.login(user.username, user.password)
+            call.respond(tokens)
         }
 
         post("/refresh") {
@@ -65,11 +66,11 @@ fun Route.authRoutes(
                     ?: return@post call.respond(HttpStatusCode.Unauthorized)
 
                 authRepository.logout(username, request.refreshToken)
-                call.respondText("Hello, ${principal.getClaim("username", String::class)}")
+                call.respondText("Goodbye, ${principal.getClaim("username", String::class)}")
             }
         }
     }
-    
+
     fun JWTPrincipal.hasRole(role: UserRole): Boolean =
         UserRole.fromJwtClaim(getClaim("role", String::class)) == role
 }

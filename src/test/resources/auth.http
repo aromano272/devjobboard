@@ -1,0 +1,44 @@
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJuYW1lIjoiam9obiIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc0NDgxNzA5MH0.b51vV5NMQy_nEr1rlHmYpEK3LbwALq0FU_Ck6uhiu9A
+@refreshToken = 129cb6f2-cccd-470f-af4e-3b202d457034
+
+### Register a new user
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "john",
+  "password": "supersecret",
+  "isAdmin": true
+}
+
+###
+
+### Login to get tokens
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "john",
+  "password": "supersecret"
+}
+
+###
+
+### Refresh tokens (replace with real refresh token after login)
+POST http://localhost:8080/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+###
+
+### Logout (replace with real refresh token after login)
+POST http://localhost:8080/auth/logout
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "refreshToken": "{{refreshToken}}"
+}

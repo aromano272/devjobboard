@@ -10,7 +10,7 @@ import org.jdbi.v3.sqlobject.statement.SqlUpdate
 @RegisterKotlinMapper(UserEntity::class)
 interface UserDao {
 
-    @SqlUpdate("INSERT INTO users (username, is_admin, password_hash) VALUES (:username, :is_admin, :passwordHash)")
+    @SqlUpdate("INSERT INTO users (username, is_admin, password_hash) VALUES (:username, :isAdmin, :passwordHash)")
     @GetGeneratedKeys
     fun insert(
         @Bind("username") username: String,
