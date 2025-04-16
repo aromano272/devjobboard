@@ -1,4 +1,4 @@
-package com.andreromano
+package com.andreromano.devjobboard
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm

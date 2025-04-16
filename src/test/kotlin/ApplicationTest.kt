@@ -1,4 +1,4 @@
-package com.andreromano
+package com.andreromano.devjobboard
 
 import io.ktor.client.request.*
 import io.ktor.http.*

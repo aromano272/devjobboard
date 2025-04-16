@@ -1,4 +1,4 @@
-package com.andreromano
+package com.andreromano.devjobboard
 
 import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable

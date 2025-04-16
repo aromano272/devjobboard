@@ -1,5 +1,6 @@
-package com.andreromano
+package com.andreromano.devjobboard
 
+import com.andreromano.devjobboard.di.configureDI
 import io.ktor.server.application.*
 
 fun main(args: Array<String>) {
@@ -7,8 +8,8 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    configureDI()
     configureSerialization()
-    configureDatabases()
     configureMonitoring()
     configureHTTP()
     configureSecurity()
