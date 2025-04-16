@@ -1,9 +1,10 @@
-package com.andreromano.devjobboard.repository
+package com.andreromano.devjobboard.service
 
 import com.andreromano.devjobboard.models.UserRole
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.server.config.*
+import java.util.*
 
 interface JwtService {
     fun create(username: String, isAdmin: Boolean): String
@@ -26,7 +27,7 @@ class DefaultJwtService(
         .withIssuer(jwtDomain)
         .withClaim("username", username)
         .withClaim("role", (if (isAdmin) UserRole.ADMIN else UserRole.USER).asJwtClaim())
-        .withExpiresAt(java.util.Date(System.currentTimeMillis() + 3600 * 1000)) // 1 hour expiration
+        .withExpiresAt(Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 1 hour expiration
         .sign(Algorithm.HMAC256(jwtSecret))
 
 }

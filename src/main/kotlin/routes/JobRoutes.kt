@@ -1,22 +1,22 @@
 package com.andreromano.devjobboard.routes
 
-import com.andreromano.devjobboard.repository.JobRepository
+import com.andreromano.devjobboard.service.JobService
 import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.jobRoutes(
-    jobRepository: JobRepository,
+    jobService: JobService,
 ) {
     route("/jobs") {
         get {
-            val jobs = jobRepository.getAll()
+            val jobs = jobService.getAll()
             call.respond(jobs.dataOrNull().orEmpty())
         }
     }
     route("/jobs/insert") {
         get {
-            jobRepository.insert()
+            jobService.insert()
             call.respond(HttpStatusCode.OK)
         }
     }

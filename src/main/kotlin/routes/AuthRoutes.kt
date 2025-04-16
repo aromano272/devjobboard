@@ -1,7 +1,7 @@
 package com.andreromano.devjobboard.routes
 
 import com.andreromano.devjobboard.models.UserRole
-import com.andreromano.devjobboard.repository.AuthRepository
+import com.andreromano.devjobboard.service.AuthService
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
@@ -34,26 +34,26 @@ data class LogoutRequest(
 )
 
 fun Route.authRoutes(
-    authRepository: AuthRepository,
+    authService: AuthService,
 ) {
     route("/auth") {
         post("/register") {
             val request = call.receive<RegisterRequest>()
 
-            val tokens = authRepository.registerAndLogin(request.username, request.password, request.isAdmin)
+            val tokens = authService.registerAndLogin(request.username, request.password, request.isAdmin)
             call.respond(tokens)
         }
 
         post("/login") {
             val user = call.receive<LoginRequest>()
-            val tokens = authRepository.login(user.username, user.password)
+            val tokens = authService.login(user.username, user.password)
             call.respond(tokens)
         }
 
         post("/refresh") {
             val request = call.receive<RefreshTokenRequest>()
 
-            val newTokens = authRepository.refreshToken(request.refreshToken)
+            val newTokens = authService.refreshToken(request.refreshToken)
 
             call.respond(newTokens)
         }
@@ -65,7 +65,7 @@ fun Route.authRoutes(
                 val username = principal.getClaim("username", String::class)
                     ?: return@post call.respond(HttpStatusCode.Unauthorized)
 
-                authRepository.logout(username, request.refreshToken)
+                authService.logout(username, request.refreshToken)
                 call.respondText("Goodbye, ${principal.getClaim("username", String::class)}")
             }
         }

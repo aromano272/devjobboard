@@ -1,4 +1,4 @@
-package com.andreromano.devjobboard.repository
+package com.andreromano.devjobboard.service
 
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.andreromano.devjobboard.database.RefreshTokenDao
@@ -10,18 +10,18 @@ import com.andreromano.devjobboard.models.UnauthorizedException
 import java.time.Instant
 import java.util.*
 
-interface AuthRepository {
+interface AuthService {
     fun registerAndLogin(username: String, password: String, isAdmin: Boolean): Tokens
     fun login(username: String, password: String): Tokens
     fun refreshToken(refreshToken: String): Tokens
     fun logout(username: String, refreshToken: String)
 }
 
-class DefaultAuthRepository(
+class DefaultAuthService(
     private val jwtService: JwtService,
     private val userDao: UserDao,
     private val refreshTokenDao: RefreshTokenDao,
-) : AuthRepository {
+) : AuthService {
 
     override fun registerAndLogin(username: String, password: String, isAdmin: Boolean): Tokens {
         if (userDao.findByUsername(username) != null) throw ConflictException("username already exists")

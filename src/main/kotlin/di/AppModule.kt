@@ -1,7 +1,7 @@
 package com.andreromano.devjobboard.di
 
 import com.andreromano.devjobboard.database.*
-import com.andreromano.devjobboard.repository.*
+import com.andreromano.devjobboard.service.*
 import io.ktor.server.application.*
 import org.jdbi.v3.core.Jdbi
 import org.koin.dsl.module
@@ -15,8 +15,8 @@ fun appModule(application: Application) = module {
             .createJdbi()
     }
 
-    single<JobRepository> {
-        DefaultJobRepository(
+    single<JobService> {
+        DefaultJobService(
             jobDao = get()
         )
     }
@@ -40,8 +40,8 @@ fun appModule(application: Application) = module {
         DefaultJwtService(application.environment.config)
     }
 
-    single<AuthRepository> {
-        DefaultAuthRepository(
+    single<AuthService> {
+        DefaultAuthService(
             jwtService = get(),
             userDao = get(),
             refreshTokenDao = get(),

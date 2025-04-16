@@ -1,8 +1,8 @@
 package com.andreromano.devjobboard
 
 import com.andreromano.devjobboard.models.*
-import com.andreromano.devjobboard.repository.AuthRepository
-import com.andreromano.devjobboard.repository.JobRepository
+import com.andreromano.devjobboard.service.AuthService
+import com.andreromano.devjobboard.service.JobService
 import com.andreromano.devjobboard.routes.authRoutes
 import com.andreromano.devjobboard.routes.jobRoutes
 import io.ktor.http.*
@@ -52,11 +52,11 @@ fun Application.configureRouting() {
         })
     }
 
-    val jobRepository: JobRepository by inject()
-    val authRepository: AuthRepository by inject()
+    val jobService: JobService by inject()
+    val authService: AuthService by inject()
 
     routing {
-        jobRoutes(jobRepository)
-        authRoutes(authRepository)
+        jobRoutes(jobService)
+        authRoutes(authService)
     }
 }
