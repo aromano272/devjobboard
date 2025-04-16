@@ -1,18 +1,21 @@
 package com.andreromano.devjobboard.database
 
 import com.andreromano.devjobboard.database.models.RefreshTokenEntity
-import org.jdbi.v3.sqlobject.statement.*
 import org.jdbi.v3.sqlobject.customizer.Bind
 import org.jdbi.v3.sqlobject.kotlin.RegisterKotlinMapper
+import org.jdbi.v3.sqlobject.statement.SqlQuery
+import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.time.Instant
 
 @RegisterKotlinMapper(RefreshTokenEntity::class)
 interface RefreshTokenDao {
 
-    @SqlUpdate("""
+    @SqlUpdate(
+        """
         INSERT INTO refresh_tokens (user_id, token, expires_at)
         VALUES (:userId, :token, :expiresAt)
-    """)
+    """
+    )
     fun insert(
         @Bind("userId") userId: Int,
         @Bind("token") token: String,

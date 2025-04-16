@@ -7,5 +7,5 @@ data class RefreshTokenEntity(
     val user_id: Int,
     val token: String,
     val expires_at: Instant,
-    val created_at: Instant
+    val created_at: Instant,
 )

@@ -34,7 +34,7 @@ data class LogoutRequest(
 )
 
 fun Route.authRoutes(
-    authRepository: AuthRepository
+    authRepository: AuthRepository,
 ) {
     route("/auth") {
         post("/register") {

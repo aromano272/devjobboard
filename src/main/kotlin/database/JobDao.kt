@@ -18,18 +18,22 @@ interface JobDao {
     @SqlQuery("SELECT * FROM job_listings WHERE id = :id")
     fun getById(@Bind("id") id: Int): JobListing?
 
-    @SqlUpdate("""
+    @SqlUpdate(
+        """
         INSERT INTO job_listings (title, company, location, remote, salary)
         VALUES (:title, :company, :location, :remote, :salary)
-    """)
+    """
+    )
     @GetGeneratedKeys
     fun insert(@BindBean job: JobListingInsert): Int
 
-    @SqlUpdate("""
+    @SqlUpdate(
+        """
         UPDATE job_listings
         SET title = :title, company = :company, location = :location, remote = :remote, salary = :salary
         WHERE id = :id
-    """)
+    """
+    )
     fun update(@BindBean job: JobListing): Int
 
     @SqlUpdate("DELETE FROM job_listings WHERE id = :id")

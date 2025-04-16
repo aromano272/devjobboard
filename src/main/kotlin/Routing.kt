@@ -1,39 +1,40 @@
 package com.andreromano.devjobboard
 
-import com.andreromano.devjobboard.database.JobDao
+import com.andreromano.devjobboard.models.*
 import com.andreromano.devjobboard.repository.AuthRepository
 import com.andreromano.devjobboard.repository.JobRepository
 import com.andreromano.devjobboard.routes.authRoutes
 import com.andreromano.devjobboard.routes.jobRoutes
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
-import io.ktor.server.plugins.calllogging.*
 import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.plugins.cors.routing.*
-import io.ktor.server.plugins.openapi.*
-import io.ktor.server.plugins.requestvalidation.RequestValidation
-import io.ktor.server.plugins.requestvalidation.ValidationResult
+import io.ktor.server.plugins.requestvalidation.*
 import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
-import java.sql.Connection
-import java.sql.DriverManager
-import org.slf4j.event.*
 
 fun Application.configureRouting() {
     install(StatusPages) {
+        exception<ApiException> { call, cause ->
+            val (status, message) = when (cause) {
+                is NotFoundException -> HttpStatusCode.NotFound to cause.message
+                is UnauthorizedException -> HttpStatusCode.Unauthorized to cause.message
+                is ConflictException -> HttpStatusCode.Conflict to cause.message
+                is BadRequestException -> HttpStatusCode.BadRequest to cause.message
+            }
+
+            call.application.environment.log.warn("Handled error", cause)
+            val error = ErrorResponse(message ?: "Unknown error")
+            call.respond(status, error)
+        }
         exception<Throwable> { call, cause ->
             call.application.environment.log.error("Unhandled exception", cause)
 
-            call.respondText(text = "500: $cause" , status = HttpStatusCode.InternalServerError)
+            val error = ErrorResponse("Unexpected error")
+            call.respond(HttpStatusCode.InternalServerError, error)
         }
     }
     install(RequestValidation) {

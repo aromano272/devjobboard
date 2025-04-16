@@ -9,5 +9,5 @@ data class JobListing(
     val company: String,
     val location: String,
     val remote: Boolean,
-    val salary: Cents?
+    val salary: Cents?,
 )

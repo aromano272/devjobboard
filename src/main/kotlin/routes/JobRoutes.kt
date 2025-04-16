@@ -6,7 +6,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.jobRoutes(
-    jobRepository: JobRepository
+    jobRepository: JobRepository,
 ) {
     route("/jobs") {
         get {

@@ -11,8 +11,6 @@ Content-Type: application/json
   "isAdmin": true
 }
 
-###
-
 ### Login to get tokens
 POST http://localhost:8080/auth/login
 Content-Type: application/json
@@ -22,9 +20,7 @@ Content-Type: application/json
   "password": "supersecret"
 }
 
-###
-
-### Refresh tokens (replace with real refresh token after login)
+### Refresh tokens (update tokens after login)
 POST http://localhost:8080/auth/refresh
 Content-Type: application/json
 
@@ -32,9 +28,7 @@ Content-Type: application/json
   "refreshToken": "{{refreshToken}}"
 }
 
-###
-
-### Logout (replace with real refresh token after login)
+### Logout (update tokens after login)
 POST http://localhost:8080/auth/logout
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}

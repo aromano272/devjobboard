@@ -7,5 +7,5 @@ data class JobListingInsert(
     val company: String,
     val location: String,
     val remote: Boolean,
-    val salary: Cents?
+    val salary: Cents?,
 )

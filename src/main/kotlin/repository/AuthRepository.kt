@@ -3,9 +3,12 @@ package com.andreromano.devjobboard.repository
 import at.favre.lib.crypto.bcrypt.BCrypt
 import com.andreromano.devjobboard.database.RefreshTokenDao
 import com.andreromano.devjobboard.database.UserDao
+import com.andreromano.devjobboard.models.ConflictException
+import com.andreromano.devjobboard.models.NotFoundException
 import com.andreromano.devjobboard.models.Tokens
+import com.andreromano.devjobboard.models.UnauthorizedException
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 
 interface AuthRepository {
     fun registerAndLogin(username: String, password: String, isAdmin: Boolean): Tokens
@@ -21,7 +24,7 @@ class DefaultAuthRepository(
 ) : AuthRepository {
 
     override fun registerAndLogin(username: String, password: String, isAdmin: Boolean): Tokens {
-        if (userDao.findByUsername(username) != null) throw IllegalArgumentException("username already exists")
+        if (userDao.findByUsername(username) != null) throw ConflictException("username already exists")
 
         val hashedPassword = BCrypt.withDefaults().hashToString(12, password.toCharArray())
         userDao.insert(username, isAdmin, hashedPassword)
@@ -30,7 +33,7 @@ class DefaultAuthRepository(
     }
 
     override fun login(username: String, password: String): Tokens {
-        val user = userDao.findByUsername(username) ?: throw IllegalArgumentException("couldn't find user")
+        val user = userDao.findByUsername(username) ?: throw NotFoundException("couldn't find user")
         val storedPassHash = user.password_hash
         val result = BCrypt.verifyer().verify(password.toCharArray(), storedPassHash)
 
@@ -43,16 +46,16 @@ class DefaultAuthRepository(
 
             Tokens(access, refresh)
         } else {
-            throw IllegalArgumentException("wrong password")
+            throw UnauthorizedException("wrong password")
         }
     }
 
     override fun refreshToken(refreshToken: String): Tokens {
         val stored = refreshTokenDao.findByToken(refreshToken)
-            ?: throw IllegalArgumentException("couldn't find refresh token")
-        if (stored.expires_at.isBefore(Instant.now())) throw IllegalArgumentException("refresh token has expired")
+            ?: throw UnauthorizedException("couldn't find refresh token")
+        val user = userDao.findById(stored.user_id) ?: throw NotFoundException("couldn't find user")
 
-        val user = userDao.findById(stored.user_id) ?: throw IllegalArgumentException("couldn't find user")
+        if (stored.expires_at.isBefore(Instant.now())) throw UnauthorizedException("refresh token has expired")
 
         refreshTokenDao.delete(refreshToken)
 
@@ -66,10 +69,11 @@ class DefaultAuthRepository(
     }
 
     override fun logout(username: String, refreshToken: String) {
-        val stored = refreshTokenDao.findByToken(refreshToken) ?: throw IllegalArgumentException("couldn't find refresh token")
+        val stored =
+            refreshTokenDao.findByToken(refreshToken) ?: throw UnauthorizedException("couldn't find refresh token")
 
-        val user = userDao.findById(stored.user_id) ?: throw IllegalArgumentException("couldn't find user")
-        if (user.username != username) throw IllegalArgumentException("username doesn't match refreshToken's username")
+        val user = userDao.findById(stored.user_id) ?: throw NotFoundException("couldn't find user")
+        if (user.username != username) throw UnauthorizedException("username doesn't match refreshToken's username")
 
         refreshTokenDao.delete(refreshToken)
     }

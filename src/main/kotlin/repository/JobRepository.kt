@@ -11,16 +11,19 @@ interface JobRepository {
 }
 
 class DefaultJobRepository(
-    private val jobDao: JobDao
+    private val jobDao: JobDao,
 ) : JobRepository {
     override fun insert() {
-        jobDao.insert(JobListingInsert(
-            title = "TODO()",
-            company = "TODO()",
-            location = "TODO()",
-            remote = true,
-            salary = 100
-        ))
+        jobDao.insert(
+            JobListingInsert(
+                title = "TODO()",
+                company = "TODO()",
+                location = "TODO()",
+                remote = true,
+                salary = 100
+            )
+        )
     }
+
     override fun getAll(): Outcome<List<JobListing>> = Outcome.Success(jobDao.getAll())
 }
