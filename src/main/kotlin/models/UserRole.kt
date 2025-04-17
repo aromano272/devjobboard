@@ -7,6 +7,6 @@ enum class UserRole {
     fun asJwtClaim(): String = name.lowercase()
 
     companion object {
-        fun fromJwtClaim(role: String?): UserRole? = role?.let { UserRole.valueOf(it) }
+        fun fromJwtClaim(role: String?): UserRole? = role?.let { UserRole.valueOf(it.uppercase()) }
     }
 }

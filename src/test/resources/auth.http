@@ -1,5 +1,5 @@
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJuYW1lIjoiam9obiIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTc0NDgxNzA5MH0.b51vV5NMQy_nEr1rlHmYpEK3LbwALq0FU_Ck6uhiu9A
-@refreshToken = 129cb6f2-cccd-470f-af4e-3b202d457034
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJqb2huIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzQ3NDk1MTE3fQ.W-fpcxffPTsI0PSmOoyFUaWcVuN8-1ibms0DbgzCw88
+@refreshToken = a2257ea4-baca-4043-8115-8bbcb62318b3
 
 ### Register a new user
 POST http://localhost:8080/auth/register

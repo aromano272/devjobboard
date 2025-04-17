@@ -6,6 +6,7 @@ ktor:
         port: 8080
         watch:
             - classes
+    development: true
 
 jwt:
     domain: "devjobboard.com"

@@ -1,10 +1,9 @@
 package com.andreromano.devjobboard.routes
 
-import com.andreromano.devjobboard.models.UserRole
+import com.andreromano.devjobboard.models.requireRequester
 import com.andreromano.devjobboard.service.AuthService
 import io.ktor.http.*
 import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -58,19 +57,14 @@ fun Route.authRoutes(
             call.respond(newTokens)
         }
 
-        authenticate("auth-jwt") {
+        authenticate {
             post("/logout") {
                 val request = call.receive<LogoutRequest>()
-                val principal = call.principal<JWTPrincipal>()!!
-                val username = principal.getClaim("username", String::class)
-                    ?: return@post call.respond(HttpStatusCode.Unauthorized)
+                val principal = call.requireRequester()
 
-                authService.logout(username, request.refreshToken)
-                call.respondText("Goodbye, ${principal.getClaim("username", String::class)}")
+                authService.logout(principal.username, request.refreshToken)
+                call.respond(HttpStatusCode.OK)
             }
         }
     }
-
-    fun JWTPrincipal.hasRole(role: UserRole): Boolean =
-        UserRole.fromJwtClaim(getClaim("role", String::class)) == role
 }

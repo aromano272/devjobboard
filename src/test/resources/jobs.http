@@ -1,0 +1,43 @@
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJqb2huIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzQ3NDk1MTE3fQ.W-fpcxffPTsI0PSmOoyFUaWcVuN8-1ibms0DbgzCw88
+@refreshToken = a2257ea4-baca-4043-8115-8bbcb62318b3
+
+### Get all jobs - auth
+GET http://localhost:8080/jobs
+Authorization: Bearer {{accessToken}}
+
+### Get all jobs
+GET http://localhost:8080/jobs
+
+### Get filtered jobs with all parameters - auth
+GET http://localhost:8080/jobs?title=developer&location=remote&type=full-time&salaryMin=50000&salaryMax=100000&experience=mid
+Authorization: Bearer {{accessToken}}
+
+### Get filtered jobs with all parameters
+GET http://localhost:8080/jobs?title=developer&location=remote&type=full-time&salaryMin=50000&salaryMax=100000&experience=mid
+
+### Get job by ID - auth
+GET http://localhost:8080/jobs/2
+Authorization: Bearer {{accessToken}}
+
+### Get job by ID
+GET http://localhost:8080/jobs/2
+
+### Insert a new job
+POST http://localhost:8080/jobs/insert
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "title": "Software Engineer",
+  "experience": "MID_LEVEL",
+  "company": "TechCorp",
+  "remote": "HYBRID",
+  "type": "FULL_TIME",
+  "location": "New York",
+  "minSalary": 60000,
+  "maxSalary": 120000
+}
+
+### Delete a job by ID
+DELETE http://localhost:8080/jobs/2
+Authorization: Bearer {{accessToken}}

@@ -1,10 +1,10 @@
 package com.andreromano.devjobboard
 
 import com.andreromano.devjobboard.models.*
-import com.andreromano.devjobboard.service.AuthService
-import com.andreromano.devjobboard.service.JobService
 import com.andreromano.devjobboard.routes.authRoutes
 import com.andreromano.devjobboard.routes.jobRoutes
+import com.andreromano.devjobboard.service.AuthService
+import com.andreromano.devjobboard.service.JobService
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -24,6 +24,7 @@ fun Application.configureRouting() {
                 is UnauthorizedException -> HttpStatusCode.Unauthorized to cause.message
                 is ConflictException -> HttpStatusCode.Conflict to cause.message
                 is BadRequestException -> HttpStatusCode.BadRequest to cause.message
+                is ForbiddenException -> HttpStatusCode.Forbidden to cause.message
             }
 
             call.application.environment.log.warn("Handled error", cause)

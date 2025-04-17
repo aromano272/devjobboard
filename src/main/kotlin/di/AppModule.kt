@@ -37,7 +37,10 @@ fun appModule(application: Application) = module {
     }
 
     single<JwtService> {
-        DefaultJwtService(application.environment.config)
+        DefaultJwtService(
+            config = application.environment.config,
+            developmentMode = application.developmentMode,
+        )
     }
 
     single<AuthService> {

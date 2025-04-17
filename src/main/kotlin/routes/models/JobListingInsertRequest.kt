@@ -1,11 +1,13 @@
-package com.andreromano.devjobboard.database.models
+package com.andreromano.devjobboard.routes.models
 
 import com.andreromano.devjobboard.models.Cents
 import com.andreromano.devjobboard.models.ExperienceLevel
 import com.andreromano.devjobboard.models.JobType
 import com.andreromano.devjobboard.models.RemoteOption
+import kotlinx.serialization.Serializable
 
-data class JobListingInsert(
+@Serializable
+data class JobListingInsertRequest(
     val title: String,
     val experience: ExperienceLevel,
     val company: String,
@@ -14,5 +16,4 @@ data class JobListingInsert(
     val location: String,
     val minSalary: Cents?,
     val maxSalary: Cents?,
-    val createdByUserId: Int,
 )

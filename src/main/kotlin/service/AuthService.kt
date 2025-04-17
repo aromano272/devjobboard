@@ -38,10 +38,10 @@ class DefaultAuthService(
         val result = BCrypt.verifyer().verify(password.toCharArray(), storedPassHash)
 
         return if (result.verified) {
-            val access = jwtService.create(username, user.is_admin)
+            val access = jwtService.create(user.id, username, user.is_admin)
             val refresh = UUID.randomUUID().toString()
 
-            val expiry = Instant.ofEpochMilli(System.currentTimeMillis() + 30L * 24 * 60 * 60 * 1000)
+            val expiry = getNewRefreshTokenExpiry()
             refreshTokenDao.insert(user.id, refresh, expiry)
 
             Tokens(access, refresh)
@@ -60,10 +60,10 @@ class DefaultAuthService(
         refreshTokenDao.delete(refreshToken)
 
         val newRefreshToken = UUID.randomUUID().toString()
-        val expiry = Instant.ofEpochMilli(System.currentTimeMillis() + 30L * 24 * 60 * 60 * 1000)
+        val expiry = getNewRefreshTokenExpiry()
         refreshTokenDao.insert(user.id, newRefreshToken, expiry)
 
-        val newAccessToken = jwtService.create(user.username, user.is_admin)
+        val newAccessToken = jwtService.create(user.id, user.username, user.is_admin)
 
         return Tokens(newAccessToken, newRefreshToken)
     }
@@ -77,4 +77,6 @@ class DefaultAuthService(
 
         refreshTokenDao.delete(refreshToken)
     }
+
+    private fun getNewRefreshTokenExpiry() = Instant.ofEpochMilli(System.currentTimeMillis() + 30L * 24 * 60 * 60 * 1000)
 }
