@@ -9,11 +9,11 @@ Authorization: Bearer {{accessToken}}
 GET http://localhost:8080/jobs
 
 ### Get filtered jobs with all parameters - auth
-GET http://localhost:8080/jobs?title=developer&location=remote&type=full-time&salaryMin=50000&salaryMax=100000&experience=mid
+GET http://localhost:8080/jobs?query=software&experience=mid_level&company=techcorp&remote=hybrid&jobType=full_time&location=new%20york&minSalary=50000&maxSalary=100000
 Authorization: Bearer {{accessToken}}
 
 ### Get filtered jobs with all parameters
-GET http://localhost:8080/jobs?title=developer&location=remote&type=full-time&salaryMin=50000&salaryMax=100000&experience=mid
+GET http://localhost:8080/jobs?query=software&experience=mid_level&company=techcorp&remote=hybrid&jobType=full_time&location=new%20york&minSalary=50000&maxSalary=100000
 
 ### Get job by ID - auth
 GET http://localhost:8080/jobs/2

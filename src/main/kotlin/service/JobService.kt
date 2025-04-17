@@ -40,7 +40,7 @@ class DefaultJobService(
         return jobDao.getFiltered(
             query = request.query,
             createdAt = createdAt,
-            experienceLevel = request.experienceLevel,
+            experience = request.experience,
             company = request.company,
             remote = request.remote,
             jobType = request.jobType,

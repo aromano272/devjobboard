@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class GetJobListingsRequest(
     val query: String? = null,
     val datePosted: DatePostedFilter? = null,
-    val experienceLevel: List<ExperienceLevel> = emptyList(),
+    val experience: List<ExperienceLevel> = emptyList(),
     val company: List<String> = emptyList(),
     val remote: List<RemoteOption> = emptyList(),
     val jobType: List<JobType> = emptyList(),
@@ -29,7 +29,7 @@ fun ApplicationCall.toGetJobListingsRequest(): GetJobListingsRequest = request.q
     if (limit <= 0 || limit > 100) throw BadRequestException("Limit must be between 1 and 100")
 
     val datePosted = params.getAndValidateEnum<DatePostedFilter>("datePosted")
-    val experienceLevel = params.getAllAndValidateEnum<ExperienceLevel>("experienceLevel")
+    val experience = params.getAllAndValidateEnum<ExperienceLevel>("experience")
     val remote = params.getAllAndValidateEnum<RemoteOption>("remote")
     val jobType = params.getAllAndValidateEnum<JobType>("jobType")
 
@@ -44,7 +44,7 @@ fun ApplicationCall.toGetJobListingsRequest(): GetJobListingsRequest = request.q
         page = page,
         size = limit,
         datePosted = datePosted,
-        experienceLevel = experienceLevel,
+        experience = experience,
         company = params.getAll("company") ?: emptyList(),
         remote = remote,
         jobType = jobType,

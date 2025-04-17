@@ -49,7 +49,7 @@ interface JobDao {
         SELECT * FROM job_listings
         WHERE (:query IS NULL OR title ILIKE '%' || :query || '%')
         AND (:datePosted::timestamp IS NULL OR created_at >= :datePosted)
-        AND (CARDINALITY(:experienceLevel) = 0 OR experience = ANY(:experienceLevel))
+        AND (CARDINALITY(:experience) = 0 OR experience = ANY(:experience))
         AND (CARDINALITY(:company) = 0 OR company = ANY(:company))
         AND (CARDINALITY(:remote) = 0 OR remote = ANY(:remote))
         AND (CARDINALITY(:jobType) = 0 OR type = ANY(:jobType))
@@ -63,7 +63,7 @@ interface JobDao {
     fun getFiltered(
         @Bind("query") query: String?,
         @Bind("datePosted") createdAt: Instant?,
-        @Bind("experienceLevel") experienceLevel: List<ExperienceLevel>,
+        @Bind("experience") experience: List<ExperienceLevel>,
         @Bind("company") company: List<String>,
         @Bind("remote") remote: List<RemoteOption>,
         @Bind("jobType") jobType: List<JobType>,
