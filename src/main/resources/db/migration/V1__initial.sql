@@ -1,8 +1,9 @@
 CREATE TABLE users (
-   id SERIAL PRIMARY KEY,
-   username TEXT NOT NULL,
-   is_admin BOOLEAN NOT NULL,
-   password_hash TEXT NOT NULL
+    id SERIAL PRIMARY KEY,
+    username TEXT NOT NULL,
+    email TEXT NOT NULL,
+    is_admin BOOLEAN NOT NULL,
+    password_hash TEXT NOT NULL
 );
 
 CREATE TABLE refresh_tokens (

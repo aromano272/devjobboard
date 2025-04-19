@@ -1,5 +1,5 @@
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJqb2huIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzQ3NjQ3NjcwfQ.s9IIJAwVLOkwnm8nFycNFmgKHfCaiLn9Wrof-8Rgc8g
-@refreshToken = 7f188ad6-42f1-4028-83fb-c8c53961bd3a
+@accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJqb2huIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzQ3Njk0MTQ2fQ.oQBiif0_mdVwhvZ9XU8Z5G6O2xhwUeg5IMlbYZnn9E4"
+@refreshToken = 9d3ddd80-5ca3-4bf8-bd3a-4362a9e55ca1
 
 ### Register a new admin
 POST http://localhost:8080/auth/register
@@ -7,6 +7,7 @@ Content-Type: application/json
 
 {
   "username": "john",
+  "email": "some@email.com",
   "password": "supersecret",
   "isAdmin": true
 }
@@ -17,6 +18,7 @@ Content-Type: application/json
 
 {
   "username": "johnu",
+  "email": "some@email.com",
   "password": "supersecret",
   "isAdmin": false
 }

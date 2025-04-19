@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Application Approved</title>
+</head>
+<body style="font-family: sans-serif; background-color: #f4f4f4; padding: 20px;">
+<table width="100%" style="max-width: 600px; margin: auto; background: white; border-radius: 8px; padding: 24px;">
+    <tr>
+        <td style="text-align: center;">
+            {{#companyLogoUrl}}
+            <img src="{{companyLogoUrl}}" alt="{{company}}" style="max-width: 150px; margin-bottom: 16px;" />
+            {{/companyLogoUrl}}
+
+            <h2>Good news, {{applicantName}}! 🎉</h2>
+            <p style="font-size: 16px;">
+                Your application for <strong>{{jobTitle}}</strong> at <strong>{{company}}</strong> has been <strong>approved</strong> as of {{approvalDate}}.
+            </p>
+
+            <p style="font-size: 15px;">
+                {{nextStepInfo}}
+            </p>
+
+            <p style="font-size: 15px;">
+                You can view your application or the job posting here:<br/>
+                <a href="{{jobLink}}">{{jobLink}}</a>
+            </p>
+
+            <p style="margin-top: 32px; font-size: 14px; color: #555;">
+                — The JobBoard Team
+            </p>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

@@ -12,10 +12,11 @@ import org.jetbrains.annotations.Blocking
 interface UserDao {
 
     @Blocking
-    @SqlUpdate("INSERT INTO users (username, is_admin, password_hash) VALUES (:username, :isAdmin, :passwordHash)")
+    @SqlUpdate("INSERT INTO users (username, email, is_admin, password_hash) VALUES (:username, :email, :isAdmin, :passwordHash)")
     @GetGeneratedKeys
     fun insert(
         @Bind("username") username: String,
+        @Bind("email") email: String,
         @Bind("isAdmin") isAdmin: Boolean,
         @Bind("passwordHash") passwordHash: String,
     ): Int

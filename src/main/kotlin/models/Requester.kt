@@ -1,8 +1,8 @@
 package com.andreromano.devjobboard.models
 
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
-import io.ktor.server.routing.*
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.principal
+import io.ktor.server.routing.RoutingCall
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,11 +10,6 @@ data class Requester(
     val userId: Int,
     val username: String,
     val role: UserRole,
-)
-
-fun Requester.toUser(): User = User(
-    id = userId,
-    username = username,
 )
 
 private fun JWTPrincipal.asRequester(): Requester = Requester(

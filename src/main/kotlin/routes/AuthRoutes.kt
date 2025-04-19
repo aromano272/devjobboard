@@ -2,16 +2,19 @@ package com.andreromano.devjobboard.routes
 
 import com.andreromano.devjobboard.models.requireRequester
 import com.andreromano.devjobboard.service.AuthService
-import io.ktor.http.*
-import io.ktor.server.auth.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.auth.authenticate
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class RegisterRequest(
     val username: String,
+    val email: String,
     val password: String,
     val isAdmin: Boolean,
 )
@@ -39,7 +42,12 @@ fun Route.authRoutes(
         post("/register") {
             val request = call.receive<RegisterRequest>()
 
-            val tokens = authService.registerAndLogin(request.username, request.password, request.isAdmin)
+            val tokens = authService.registerAndLogin(
+                request.username,
+                request.email,
+                request.password,
+                request.isAdmin,
+            )
             call.respond(tokens)
         }
 

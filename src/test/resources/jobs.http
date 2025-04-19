@@ -1,5 +1,5 @@
-@adminAccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJqb2huIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzQ3NjQ3NjcwfQ.s9IIJAwVLOkwnm8nFycNFmgKHfCaiLn9Wrof-8Rgc8g
-@applicantAccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJJZCI6MiwidXNlcm5hbWUiOiJqb2hudSIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNzQ3NjQ3NzEwfQ.k4co2yCfOcfA2M88Y89Qx-Hp-Jfeu7mubdL4bSLwPaU
+@adminAccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJqb2huIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzQ3Njk0MTQ2fQ.oQBiif0_mdVwhvZ9XU8Z5G6O2xhwUeg5IMlbYZnn9E4
+@applicantAccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJJZCI6MiwidXNlcm5hbWUiOiJqb2hudSIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNzQ3Njk0MTk1fQ.3K5CzfqJzQvWCkgolzRJlMDaT0Q2FaCA6Lo3l2KOsBo
 
 ### Get all jobs - auth
 GET http://localhost:8080/jobs
@@ -51,7 +51,7 @@ DELETE http://localhost:8080/jobs/favorite/2
 Authorization: Bearer {{applicantAccessToken}}
 
 ### Apply for job by ID
-POST http://localhost:8080/jobapplications/apply/7
+POST http://localhost:8080/jobapplications/apply/1
 Authorization: Bearer {{applicantAccessToken}}
 
 ### Get all job applications for requester

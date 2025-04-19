@@ -11,7 +11,12 @@ import java.time.Instant
 import java.util.*
 
 interface AuthService {
-    fun registerAndLogin(username: String, password: String, isAdmin: Boolean): Tokens
+    fun registerAndLogin(
+        username: String,
+        email: String,
+        password: String,
+        isAdmin: Boolean
+    ): Tokens
     fun login(username: String, password: String): Tokens
     fun refreshToken(refreshToken: String): Tokens
     fun logout(username: String, refreshToken: String)
@@ -23,11 +28,16 @@ class DefaultAuthService(
     private val refreshTokenDao: RefreshTokenDao,
 ) : AuthService {
 
-    override fun registerAndLogin(username: String, password: String, isAdmin: Boolean): Tokens {
+    override fun registerAndLogin(
+        username: String,
+        email: String,
+        password: String,
+        isAdmin: Boolean
+    ): Tokens {
         if (userDao.findByUsername(username) != null) throw ConflictException("username already exists")
 
         val hashedPassword = BCrypt.withDefaults().hashToString(12, password.toCharArray())
-        userDao.insert(username, isAdmin, hashedPassword)
+        userDao.insert(username, email, isAdmin, hashedPassword)
 
         return login(username, password)
     }

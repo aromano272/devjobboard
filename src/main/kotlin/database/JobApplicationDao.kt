@@ -50,6 +50,10 @@ interface JobApplicationDao {
     ): Int
 
     @Blocking
+    @SqlUpdate("UPDATE job_applications SET state = :state WHERE id = :id")
+    fun updateState(@Bind("id") id: Int, @Bind("state") state: JobApplicationStateEntity): Int
+
+    @Blocking
     @SqlUpdate("DELETE FROM job_applications WHERE id = :id")
     fun delete(@Bind("id") id: Int): Int
 

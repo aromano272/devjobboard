@@ -13,7 +13,9 @@ import com.andreromano.devjobboard.models.JobApplication
 import com.andreromano.devjobboard.models.NotFoundException
 import com.andreromano.devjobboard.models.Requester
 import com.andreromano.devjobboard.models.UserRole
-import com.andreromano.devjobboard.models.toUser
+import com.andreromano.devjobboard.service.templates.JobApplicationApproved
+import com.andreromano.devjobboard.service.templates.JobApplicationRejected
+import com.andreromano.devjobboard.service.templates.NewJobApplicationReceivedNotificationForApplicant
 import com.andreromano.devjobboard.service.templates.NewJobApplicationReceivedNotificationForRecruiter
 import io.ktor.util.logging.Logger
 import io.ktor.util.logging.error
@@ -25,6 +27,8 @@ import java.time.format.DateTimeFormatter
 
 interface JobApplicationService {
     suspend fun create(requester: Requester, jobId: Int)
+    suspend fun approve(requester: Requester, jobApplicationId: Int)
+    suspend fun reject(requester: Requester, jobApplicationId: Int)
     fun getAllForRequester(requester: Requester, state: JobApplicationState?): List<JobApplication>
     fun getAllByJobId(requester: Requester, jobId: Int, state: JobApplicationState?): List<JobApplication>
 }
@@ -47,19 +51,84 @@ class DefaultJobApplicationService(
         jobApplicationDao.insert(requester.userId, jobId, JobApplicationStateEntity.PENDING)
 
         val adminUser = userDao.findById(job.createdByUserId)
-        val template = NewJobApplicationReceivedNotificationForRecruiter(
+        val nowFormatted = DateTimeFormatter.ISO_LOCAL_DATE
+            .withZone(ZoneId.of("UTC"))
+            .format(Instant.now())
+        val templateRecruiter = NewJobApplicationReceivedNotificationForRecruiter(
             recruiterName = adminUser?.username.orEmpty(),
             applicantName = requester.username,
             jobTitle = job.title,
-            applicationDate = DateTimeFormatter.ISO_LOCAL_DATE
-                .withZone(ZoneId.of("UTC"))
-                .format(Instant.now()),
+            applicationDate = nowFormatted,
             jobLink = "TODO",
             applicantEmail = "TODO",
             resumeLink = "TODO"
         )
+        val templateApplicant = NewJobApplicationReceivedNotificationForApplicant(
+            applicantName = requester.username,
+            jobTitle = job.title,
+            company = job.company,
+            applicationDate = nowFormatted,
+            jobLink = "TODO",
+            companyLogoUrl = "TODO"
+        )
         try {
-            emailService.sendEmail("andre.romano272@hotmail.com", "Test", template)
+            emailService.sendEmail("some@email.com", "Test", templateRecruiter)
+        } catch (ex: Exception) {
+            logger.error(ex)
+        }
+        try {
+            emailService.sendEmail("some@email.com", "Test", templateApplicant)
+        } catch (ex: Exception) {
+            logger.error(ex)
+        }
+    }
+
+    override suspend fun approve(requester: Requester, jobApplicationId: Int) = withContext(Dispatchers.IO) {
+        if (requester.role != UserRole.ADMIN) throw ForbiddenException("Only admins can approve applications")
+        val jobApplication = jobApplicationDao.getById(jobApplicationId) ?: throw NotFoundException("Job application not found")
+        val job = jobDao.getById(jobApplication.jobId) ?: throw NotFoundException("Job not found")
+
+        val updated = jobApplicationDao.updateState(jobApplicationId, JobApplicationStateEntity.APPROVED)
+        if (updated == 0) return@withContext
+
+        val template = JobApplicationApproved(
+            applicantName = requester.username,
+            jobTitle = job.title,
+            company = job.company,
+            approvalDate = DateTimeFormatter.ISO_LOCAL_DATE
+                .withZone(ZoneId.of("UTC"))
+                .format(Instant.now()),
+            nextStepInfo = "You'll be contacted in the next few days",
+            jobLink = "TODO",
+            companyLogoUrl = "TODO",
+        )
+        try {
+            emailService.sendEmail("some@email.com", "Test", template)
+        } catch (ex: Exception) {
+            logger.error(ex)
+        }
+    }
+
+    override suspend fun reject(requester: Requester, jobApplicationId: Int) = withContext(Dispatchers.IO) {
+        if (requester.role != UserRole.ADMIN) throw ForbiddenException("Only admins can approve applications")
+        val jobApplication = jobApplicationDao.getById(jobApplicationId) ?: throw NotFoundException("Job application not found")
+        val job = jobDao.getById(jobApplication.jobId) ?: throw NotFoundException("Job not found")
+
+        val updated = jobApplicationDao.updateState(jobApplicationId, JobApplicationStateEntity.REJECTED)
+        if (updated == 0) return@withContext
+
+        val template = JobApplicationRejected(
+            applicantName = requester.username,
+            jobTitle = job.title,
+            company = job.company,
+            rejectionDate = DateTimeFormatter.ISO_LOCAL_DATE
+                .withZone(ZoneId.of("UTC"))
+                .format(Instant.now()),
+            jobLink = "TODO",
+            companyLogoUrl = "TODO",
+        )
+        try {
+            emailService.sendEmail("some@email.com", "Test", template)
         } catch (ex: Exception) {
             logger.error(ex)
         }
@@ -69,6 +138,7 @@ class DefaultJobApplicationService(
         if (requester.role != UserRole.USER) throw ForbiddenException("Admins can't apply for jobs")
         val applications = jobApplicationDao.getAll(requester.userId, state = state?.toEntity())
 
+        val user = userDao.findById(requester.userId)?.toDomain() ?: throw NotFoundException("user not found")
         val userFavoriteJobIds = jobFavoriteDao.getAllByUserId(requester.userId)
             .map { it.jobId }
             .toSet()
@@ -81,7 +151,7 @@ class DefaultJobApplicationService(
             jobs[application.jobId]?.let { job ->
                 application.toDomain(
                     job = job,
-                    user = requester.toUser(),
+                    user = user,
                 )
             }
         }
