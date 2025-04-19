@@ -2,8 +2,10 @@ package com.andreromano.devjobboard
 
 import com.andreromano.devjobboard.models.*
 import com.andreromano.devjobboard.routes.authRoutes
+import com.andreromano.devjobboard.routes.jobApplicationRoutes
 import com.andreromano.devjobboard.routes.jobRoutes
 import com.andreromano.devjobboard.service.AuthService
+import com.andreromano.devjobboard.service.JobApplicationService
 import com.andreromano.devjobboard.service.JobService
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -53,11 +55,14 @@ fun Application.configureRouting() {
         })
     }
 
-    val jobService: JobService by inject()
     val authService: AuthService by inject()
+    val jobService: JobService by inject()
+    val jobApplicationService: JobApplicationService by inject()
+
 
     routing {
-        jobRoutes(jobService)
         authRoutes(authService)
+        jobRoutes(jobService)
+        jobApplicationRoutes(jobApplicationService)
     }
 }

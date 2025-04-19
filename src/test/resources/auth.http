@@ -1,7 +1,7 @@
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJqb2huIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzQ3NDk1MTE3fQ.W-fpcxffPTsI0PSmOoyFUaWcVuN8-1ibms0DbgzCw88
-@refreshToken = a2257ea4-baca-4043-8115-8bbcb62318b3
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJqb2huIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzQ3NjQ3NjcwfQ.s9IIJAwVLOkwnm8nFycNFmgKHfCaiLn9Wrof-8Rgc8g
+@refreshToken = 7f188ad6-42f1-4028-83fb-c8c53961bd3a
 
-### Register a new user
+### Register a new admin
 POST http://localhost:8080/auth/register
 Content-Type: application/json
 
@@ -9,6 +9,16 @@ Content-Type: application/json
   "username": "john",
   "password": "supersecret",
   "isAdmin": true
+}
+
+### Register a new user
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "johnu",
+  "password": "supersecret",
+  "isAdmin": false
 }
 
 ### Login to get tokens

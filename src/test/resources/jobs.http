@@ -1,30 +1,30 @@
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJqb2huIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzQ3NDk1MTE3fQ.W-fpcxffPTsI0PSmOoyFUaWcVuN8-1ibms0DbgzCw88
-@refreshToken = a2257ea4-baca-4043-8115-8bbcb62318b3
+@adminAccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJJZCI6MSwidXNlcm5hbWUiOiJqb2huIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzQ3NjQ3NjcwfQ.s9IIJAwVLOkwnm8nFycNFmgKHfCaiLn9Wrof-8Rgc8g
+@applicantAccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkZXZqb2Jib2FyZC11c2VycyIsImlzcyI6ImRldmpvYmJvYXJkLmNvbSIsInVzZXJJZCI6MiwidXNlcm5hbWUiOiJqb2hudSIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNzQ3NjQ3NzEwfQ.k4co2yCfOcfA2M88Y89Qx-Hp-Jfeu7mubdL4bSLwPaU
 
 ### Get all jobs - auth
 GET http://localhost:8080/jobs
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{applicantAccessToken}}
 
 ### Get all jobs
 GET http://localhost:8080/jobs
 
 ### Get filtered jobs with all parameters - auth
 GET http://localhost:8080/jobs?query=software&experience=mid_level&company=techcorp&remote=hybrid&jobType=full_time&location=new%20york&minSalary=50000&maxSalary=100000
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{applicantAccessToken}}
 
 ### Get filtered jobs with all parameters
 GET http://localhost:8080/jobs?query=software&experience=mid_level&company=techcorp&remote=hybrid&jobType=full_time&location=new%20york&minSalary=50000&maxSalary=100000
 
 ### Get job by ID - auth
 GET http://localhost:8080/jobs/2
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{applicantAccessToken}}
 
 ### Get job by ID
 GET http://localhost:8080/jobs/2
 
 ### Insert a new job
 POST http://localhost:8080/jobs/insert
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{adminAccessToken}}
 Content-Type: application/json
 
 {
@@ -40,4 +40,25 @@ Content-Type: application/json
 
 ### Delete a job by ID
 DELETE http://localhost:8080/jobs/2
-Authorization: Bearer {{accessToken}}
+Authorization: Bearer {{applicantAccessToken}}
+
+### Favorite a job by ID
+POST http://localhost:8080/jobs/favorite/2
+Authorization: Bearer {{applicantAccessToken}}
+
+### Unfavorite a job by ID
+DELETE http://localhost:8080/jobs/favorite/2
+Authorization: Bearer {{applicantAccessToken}}
+
+### Apply for job by ID
+POST http://localhost:8080/jobapplications/apply/2
+Authorization: Bearer {{applicantAccessToken}}
+
+### Get all job applications for requester
+GET http://localhost:8080/jobapplications
+Authorization: Bearer {{applicantAccessToken}}
+
+### Get all job applications for job
+GET http://localhost:8080/jobapplications/job/2
+Authorization: Bearer {{applicantAccessToken}}
+

@@ -26,3 +26,17 @@ CREATE TABLE job_listings (
     created_at TIMESTAMP DEFAULT now(),
     created_by_user_id INT REFERENCES users(id)
 );
+
+CREATE TABLE job_applications (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id),
+    job_id INT NOT NULL REFERENCES job_listings(id),
+    state TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT now()
+);
+
+CREATE TABLE job_favorites (
+    user_id INT NOT NULL REFERENCES users(id),
+    job_id INT NOT NULL REFERENCES job_listings(id),
+    PRIMARY KEY (user_id, job_id)
+);

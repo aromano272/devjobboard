@@ -8,22 +8,26 @@ import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 
-fun appModule(application: Application) = module {
+fun databaseModule(application: Application) = module {
     single<Jdbi> {
         application.createHikariDataSource()
             .runMigrations()
             .createJdbi()
     }
 
-    single<JobService> {
-        DefaultJobService(
-            jobDao = get()
-        )
-    }
-
     single<JobDao> {
         val jdbi: Jdbi = get()
         jdbi.onDemand(JobDao::class.java)
+    }
+
+    single<JobApplicationDao> {
+        val jdbi: Jdbi = get()
+        jdbi.onDemand(JobApplicationDao::class.java)
+    }
+
+    single<JobFavoriteDao> {
+        val jdbi: Jdbi = get()
+        jdbi.onDemand(JobFavoriteDao::class.java)
     }
 
     single<UserDao> {
@@ -35,7 +39,9 @@ fun appModule(application: Application) = module {
         val jdbi: Jdbi = get()
         jdbi.onDemand(RefreshTokenDao::class.java)
     }
+}
 
+fun serviceModule(application: Application) = module {
     single<JwtService> {
         DefaultJwtService(
             config = application.environment.config,
@@ -50,6 +56,24 @@ fun appModule(application: Application) = module {
             refreshTokenDao = get(),
         )
     }
+
+    single<JobService> {
+        DefaultJobService(
+            jobDao = get(),
+            jobFavoriteDao = get(),
+            jobApplicationDao = get(),
+        )
+    }
+
+    single<JobApplicationService> {
+        DefaultJobApplicationService(
+            jobDao = get(),
+            jobApplicationDao = get(),
+            jobFavoriteDao = get(),
+            userDao = get(),
+        )
+    }
+
 }
 
 fun Application.configureDI() {
@@ -57,6 +81,7 @@ fun Application.configureDI() {
 
     install(Koin) {
         slf4jLogger()
-        modules(appModule(app))
+        modules(databaseModule(app))
+        modules(serviceModule(app))
     }
 }

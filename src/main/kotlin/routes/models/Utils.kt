@@ -16,6 +16,6 @@ inline fun <reified T : Enum<T>> Parameters.getAllAndValidateEnum(name: String):
 inline fun <reified T : Enum<T>> enumValueOfOrThrowBadRequest(name: String, field: String): T = try {
     enumValueOf<T>(name.uppercase())
 } catch (ex: Exception) {
-    throw BadRequestException("Invalid $field value")
+    throw BadRequestException("Invalid $field value, expected: ${T::class.java.enumConstants.toList()}, got: ${name.uppercase()}")
 }
 

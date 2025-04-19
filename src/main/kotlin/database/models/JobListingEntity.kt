@@ -18,7 +18,10 @@ data class JobListingEntity(
     val createdByUserId: Int,
 )
 
-fun JobListingEntity.toDomain(): JobListing = JobListing(
+fun JobListingEntity.toDomain(
+    favorite: Boolean,
+    applied: Boolean,
+): JobListing = JobListing(
     id = id,
     title = title,
     experience = experience.toDomain(),
@@ -29,7 +32,7 @@ fun JobListingEntity.toDomain(): JobListing = JobListing(
     minSalary = minSalary,
     maxSalary = maxSalary,
     createdAt = createdAt.toEpochMilli(),
-    saved = false,
-    applied = false,
+    favorite = favorite,
+    applied = applied,
 )
 

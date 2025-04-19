@@ -19,6 +19,9 @@ interface JobDao {
     @SqlQuery("SELECT * FROM job_listings")
     fun getAll(): List<JobListingEntity>
 
+    @SqlQuery("SELECT * FROM job_listings WHERE id = ANY(:ids)")
+    fun getAllByIds(@Bind("ids") ids: List<Int>): List<JobListingEntity>
+
     @SqlQuery("SELECT * FROM job_listings WHERE id = :id")
     fun getById(@Bind("id") id: Int): JobListingEntity?
 

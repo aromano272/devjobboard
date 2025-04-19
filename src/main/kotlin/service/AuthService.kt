@@ -34,11 +34,11 @@ class DefaultAuthService(
 
     override fun login(username: String, password: String): Tokens {
         val user = userDao.findByUsername(username) ?: throw NotFoundException("couldn't find user")
-        val storedPassHash = user.password_hash
+        val storedPassHash = user.passwordHash
         val result = BCrypt.verifyer().verify(password.toCharArray(), storedPassHash)
 
         return if (result.verified) {
-            val access = jwtService.create(user.id, username, user.is_admin)
+            val access = jwtService.create(user.id, username, user.isAdmin)
             val refresh = UUID.randomUUID().toString()
 
             val expiry = getNewRefreshTokenExpiry()
@@ -53,9 +53,9 @@ class DefaultAuthService(
     override fun refreshToken(refreshToken: String): Tokens {
         val stored = refreshTokenDao.findByToken(refreshToken)
             ?: throw UnauthorizedException("couldn't find refresh token")
-        val user = userDao.findById(stored.user_id) ?: throw NotFoundException("couldn't find user")
+        val user = userDao.findById(stored.userId) ?: throw NotFoundException("couldn't find user")
 
-        if (stored.expires_at.isBefore(Instant.now())) throw UnauthorizedException("refresh token has expired")
+        if (stored.expiresAt.isBefore(Instant.now())) throw UnauthorizedException("refresh token has expired")
 
         refreshTokenDao.delete(refreshToken)
 
@@ -63,7 +63,7 @@ class DefaultAuthService(
         val expiry = getNewRefreshTokenExpiry()
         refreshTokenDao.insert(user.id, newRefreshToken, expiry)
 
-        val newAccessToken = jwtService.create(user.id, user.username, user.is_admin)
+        val newAccessToken = jwtService.create(user.id, user.username, user.isAdmin)
 
         return Tokens(newAccessToken, newRefreshToken)
     }
@@ -72,7 +72,7 @@ class DefaultAuthService(
         val stored =
             refreshTokenDao.findByToken(refreshToken) ?: throw UnauthorizedException("couldn't find refresh token")
 
-        val user = userDao.findById(stored.user_id) ?: throw NotFoundException("couldn't find user")
+        val user = userDao.findById(stored.userId) ?: throw NotFoundException("couldn't find user")
         if (user.username != username) throw UnauthorizedException("username doesn't match refreshToken's username")
 
         refreshTokenDao.delete(refreshToken)

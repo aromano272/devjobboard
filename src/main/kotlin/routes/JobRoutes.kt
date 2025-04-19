@@ -1,5 +1,6 @@
 package com.andreromano.devjobboard.routes
 
+import com.andreromano.devjobboard.models.BadRequestException
 import com.andreromano.devjobboard.models.requester
 import com.andreromano.devjobboard.models.requireRequester
 import com.andreromano.devjobboard.routes.models.JobListingInsertRequest
@@ -7,7 +8,6 @@ import com.andreromano.devjobboard.routes.models.toGetJobListingsRequest
 import com.andreromano.devjobboard.service.JobService
 import io.ktor.http.*
 import io.ktor.server.auth.*
-import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -42,6 +42,22 @@ fun Route.jobRoutes(
                 val requester = call.requireRequester()
                 val request = call.receive<JobListingInsertRequest>()
                 jobService.insert(requester, request)
+                call.respond(HttpStatusCode.OK)
+            }
+
+            post("/favorite/{id}") {
+                val requester = call.requireRequester()
+                val jobId = call.parameters["id"]?.toIntOrNull()
+                    ?: throw BadRequestException("Invalid or missing job ID")
+                jobService.favorite(requester, jobId)
+                call.respond(HttpStatusCode.OK)
+            }
+
+            delete("/favorite/{id}") {
+                val requester = call.requireRequester()
+                val jobId = call.parameters["id"]?.toIntOrNull()
+                    ?: throw BadRequestException("Invalid or missing job ID")
+                jobService.unfavorite(requester, jobId)
                 call.respond(HttpStatusCode.OK)
             }
 

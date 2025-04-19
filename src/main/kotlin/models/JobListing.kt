@@ -16,6 +16,6 @@ data class JobListing(
     val createdAt: Millis,
 
     // Authenticated only fields
-    val saved: Boolean,
+    val favorite: Boolean,
     val applied: Boolean,
 )

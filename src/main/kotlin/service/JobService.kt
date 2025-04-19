@@ -1,6 +1,9 @@
 package com.andreromano.devjobboard.service
 
+import com.andreromano.devjobboard.database.JobApplicationDao
 import com.andreromano.devjobboard.database.JobDao
+import com.andreromano.devjobboard.database.JobFavoriteDao
+import com.andreromano.devjobboard.database.models.JobApplicationStateEntity
 import com.andreromano.devjobboard.database.models.toDomain
 import com.andreromano.devjobboard.models.*
 import com.andreromano.devjobboard.routes.models.DatePostedFilter
@@ -12,6 +15,8 @@ import java.time.temporal.ChronoUnit
 
 interface JobService {
     fun insert(requester: Requester, request: JobListingInsertRequest)
+    fun favorite(requester: Requester, jobId: Int)
+    fun unfavorite(requester: Requester, jobId: Int)
     fun getAll(requester: Requester?, request: GetJobListingsRequest): List<JobListing>
     fun getById(requester: Requester?, id: Int): JobListing?
     fun delete(requester: Requester, id: Int)
@@ -19,10 +24,26 @@ interface JobService {
 
 class DefaultJobService(
     private val jobDao: JobDao,
+    private val jobFavoriteDao: JobFavoriteDao,
+    private val jobApplicationDao: JobApplicationDao,
 ) : JobService {
     override fun insert(requester: Requester, request: JobListingInsertRequest) {
         if (requester.role != UserRole.ADMIN) throw ForbiddenException("User has no permission to create a new job")
         jobDao.insert(request.toEntityInsert(requester.userId))
+    }
+
+    override fun favorite(requester: Requester, jobId: Int) {
+        if (requester.role != UserRole.USER) throw ForbiddenException("Admins can't favorite jobs")
+        val job = jobDao.getById(jobId) ?: throw NotFoundException("Job not found")
+        val inserted = jobFavoriteDao.insert(requester.userId, jobId)
+        if (inserted == 0) throw ConflictException("Job already favorited")
+    }
+
+    override fun unfavorite(requester: Requester, jobId: Int) {
+        if (requester.role != UserRole.USER) throw ForbiddenException("Admins can't unfavorite jobs")
+        val job = jobDao.getById(jobId) ?: throw NotFoundException("Job not found")
+        val deleted = jobFavoriteDao.delete(requester.userId, jobId)
+        if (deleted == 0) throw ConflictException("Job already unfavorited")
     }
 
     override fun getAll(requester: Requester?, request: GetJobListingsRequest): List<JobListing> {
@@ -37,6 +58,18 @@ class DefaultJobService(
                 .truncatedTo(ChronoUnit.DAYS)
             null -> null
         }
+
+        val userFavoriteJobIds = requester?.userId?.let {
+            jobFavoriteDao.getAllByUserId(it)
+                .map { it.jobId }
+                .toSet()
+        }.orEmpty()
+        val userApplicationJobIds = requester?.userId?.let {
+            jobApplicationDao.getAllByUserId(it)
+                .map { it.jobId }
+                .toSet()
+        }.orEmpty()
+
         return jobDao.getFiltered(
             query = request.query,
             createdAt = createdAt,
@@ -50,12 +83,22 @@ class DefaultJobService(
             limit = request.size,
             offset = request.page * request.size
         ).map {
-            it.toDomain()
+            it.toDomain(
+                favorite = userFavoriteJobIds.contains(it.id),
+                applied = userApplicationJobIds.contains(it.id),
+            )
         }
     }
 
     override fun getById(requester: Requester?, id: Int): JobListing? =
-        jobDao.getById(id)?.toDomain()
+        jobDao.getById(id)?.toDomain(
+            favorite = requester?.userId?.let {
+                jobFavoriteDao.getById(it, id)
+            } != null,
+            applied = requester?.userId?.let {
+                jobApplicationDao.getAll(it, id, JobApplicationStateEntity.PENDING).isNotEmpty()
+            } ?: false,
+        )
 
     override fun delete(requester: Requester, id: Int) {
         if (requester.role != UserRole.ADMIN) throw ForbiddenException("User is not admin")

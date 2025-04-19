@@ -12,6 +12,11 @@ data class Requester(
     val role: UserRole,
 )
 
+fun Requester.toUser(): User = User(
+    id = userId,
+    username = username,
+)
+
 private fun JWTPrincipal.asRequester(): Requester = Requester(
     userId = getClaim("userId", Int::class)
         ?: throw UnauthorizedException("userId missing from token"),

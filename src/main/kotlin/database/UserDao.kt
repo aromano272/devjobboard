@@ -18,6 +18,9 @@ interface UserDao {
         @Bind("passwordHash") passwordHash: String,
     ): Int
 
+    @SqlQuery("SELECT * FROM users WHERE id = ANY(:ids)")
+    fun getAllByIds(@Bind("ids") ids: List<Int>): List<UserEntity>
+
     @SqlQuery("SELECT * FROM users WHERE username = :username")
     fun findByUsername(@Bind("username") username: String): UserEntity?
 
