@@ -11,20 +11,25 @@ import org.jdbi.v3.sqlobject.kotlin.RegisterKotlinMapper
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
+import org.jetbrains.annotations.Blocking
 import java.time.Instant
 
 @RegisterKotlinMapper(JobListingEntity::class)
 interface JobDao {
 
+    @Blocking
     @SqlQuery("SELECT * FROM job_listings")
     fun getAll(): List<JobListingEntity>
 
+    @Blocking
     @SqlQuery("SELECT * FROM job_listings WHERE id = ANY(:ids)")
     fun getAllByIds(@Bind("ids") ids: List<Int>): List<JobListingEntity>
 
+    @Blocking
     @SqlQuery("SELECT * FROM job_listings WHERE id = :id")
     fun getById(@Bind("id") id: Int): JobListingEntity?
 
+    @Blocking
     @SqlUpdate(
         """
         INSERT INTO job_listings (title, experience, company, remote, type, location, min_salary, max_salary, created_by_user_id)
@@ -34,6 +39,7 @@ interface JobDao {
     @GetGeneratedKeys
     fun insert(@BindBean job: JobListingInsert): Int
 
+    @Blocking
     @SqlUpdate(
         """
         UPDATE job_listings
@@ -44,9 +50,11 @@ interface JobDao {
     )
     fun update(@BindBean job: JobListingEntity): Int
 
+    @Blocking
     @SqlUpdate("DELETE FROM job_listings WHERE id = :id")
     fun delete(@Bind("id") id: Int): Int
 
+    @Blocking
     @SqlQuery(
         """
         SELECT * FROM job_listings

@@ -7,16 +7,20 @@ import org.jdbi.v3.sqlobject.kotlin.RegisterKotlinMapper
 import org.jdbi.v3.sqlobject.statement.GetGeneratedKeys
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
+import org.jetbrains.annotations.Blocking
 
 @RegisterKotlinMapper(JobApplicationEntity::class)
 interface JobApplicationDao {
 
+    @Blocking
     @SqlQuery("SELECT * FROM job_applications WHERE id = :id")
     fun getById(@Bind("id") id: Int): JobApplicationEntity?
 
+    @Blocking
     @SqlQuery("SELECT * FROM job_applications WHERE user_id = :userId")
     fun getAllByUserId(@Bind("userId") userId: Int): List<JobApplicationEntity>
 
+    @Blocking
     @SqlQuery(
         """
             SELECT * FROM job_applications 
@@ -31,6 +35,7 @@ interface JobApplicationDao {
         @Bind("state") state: JobApplicationStateEntity? = null,
     ): List<JobApplicationEntity>
 
+    @Blocking
     @SqlUpdate(
         """
         INSERT INTO job_applications (user_id, job_id, state)
@@ -44,6 +49,7 @@ interface JobApplicationDao {
         @Bind("state") state: JobApplicationStateEntity,
     ): Int
 
+    @Blocking
     @SqlUpdate("DELETE FROM job_applications WHERE id = :id")
     fun delete(@Bind("id") id: Int): Int
 

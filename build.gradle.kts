@@ -25,6 +25,9 @@ dependencies {
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.postgresql)
     implementation(libs.h2)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.client.logging)
     implementation(libs.ktor.server.call.logging)
     implementation(libs.ktor.server.openapi)
     implementation(libs.ktor.server.cors)
@@ -45,6 +48,8 @@ dependencies {
     implementation(libs.flyway.core)
     implementation(libs.flyway.database.postgresql)
     implementation(libs.bcrypt)
+    implementation(libs.dotenv)
+    implementation("io.ktor:ktor-client-cio-jvm:3.1.2")
 
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)

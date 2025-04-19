@@ -51,7 +51,7 @@ DELETE http://localhost:8080/jobs/favorite/2
 Authorization: Bearer {{applicantAccessToken}}
 
 ### Apply for job by ID
-POST http://localhost:8080/jobapplications/apply/2
+POST http://localhost:8080/jobapplications/apply/4
 Authorization: Bearer {{applicantAccessToken}}
 
 ### Get all job applications for requester

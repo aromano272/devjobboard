@@ -7,21 +7,33 @@ import com.andreromano.devjobboard.database.UserDao
 import com.andreromano.devjobboard.database.models.JobApplicationStateEntity
 import com.andreromano.devjobboard.database.models.toDomain
 import com.andreromano.devjobboard.database.models.toEntity
-import com.andreromano.devjobboard.models.*
+import com.andreromano.devjobboard.models.ConflictException
+import com.andreromano.devjobboard.models.ForbiddenException
+import com.andreromano.devjobboard.models.JobApplication
+import com.andreromano.devjobboard.models.NotFoundException
+import com.andreromano.devjobboard.models.Requester
+import com.andreromano.devjobboard.models.UserRole
+import com.andreromano.devjobboard.models.toUser
+import io.ktor.util.logging.Logger
+import io.ktor.util.logging.error
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 interface JobApplicationService {
-    fun create(requester: Requester, jobId: Int)
+    suspend fun create(requester: Requester, jobId: Int)
     fun getAllForRequester(requester: Requester, state: JobApplicationState?): List<JobApplication>
     fun getAllByJobId(requester: Requester, jobId: Int, state: JobApplicationState?): List<JobApplication>
 }
 
 class DefaultJobApplicationService(
+    private val logger: Logger,
     private val jobDao: JobDao,
     private val jobApplicationDao: JobApplicationDao,
     private val jobFavoriteDao: JobFavoriteDao,
     private val userDao: UserDao,
+    private val emailService: EmailService,
 ) : JobApplicationService {
-    override fun create(requester: Requester, jobId: Int) {
+    override suspend fun create(requester: Requester, jobId: Int) = withContext(Dispatchers.IO) {
         if (requester.role != UserRole.USER) throw ForbiddenException("Admins can't apply for jobs")
         val job = jobDao.getById(jobId) ?: throw NotFoundException("Job not found")
         val jobApplications = jobApplicationDao.getAll(requester.userId, jobId)
@@ -29,6 +41,12 @@ class DefaultJobApplicationService(
             throw ConflictException("Job already applied")
 
         jobApplicationDao.insert(requester.userId, jobId, JobApplicationStateEntity.PENDING)
+
+        try {
+            emailService.sendEmail("andre.romano272@hotmail.com", "Test", "<h1>Test</h1>")
+        } catch (ex: Exception) {
+            logger.error(ex)
+        }
     }
 
     override fun getAllForRequester(requester: Requester, state: JobApplicationState?): List<JobApplication> {

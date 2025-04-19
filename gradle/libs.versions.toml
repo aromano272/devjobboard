@@ -3,6 +3,7 @@
 h2-version = "2.3.232"
 kotlin-version = "2.1.20"
 ktor-version = "3.1.2"
+ktor-client-version = "3.1.2"
 logback-version = "1.4.14"
 postgres-version = "42.7.5"
 hikari = "5.0.1"
@@ -10,6 +11,7 @@ koin = "3.5.0"
 jdbi = "3.43.0"
 flyway = "11.7.1"
 bcrypt = "0.10.2"
+dotenv = "6.5.1"
 
 [libraries]
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor-version" }
@@ -17,6 +19,9 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor-version" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres-version" }
 h2 = { module = "com.h2database:h2", version.ref = "h2-version" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor-client-version" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor-client-version" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor-client-version" }
 ktor-server-call-logging = { module = "io.ktor:ktor-server-call-logging", version.ref = "ktor-version" }
 ktor-server-openapi = { module = "io.ktor:ktor-server-openapi", version.ref = "ktor-version" }
 ktor-server-cors = { module = "io.ktor:ktor-server-cors", version.ref = "ktor-version" }
@@ -39,8 +44,7 @@ jdbi-kotlin = { module = "org.jdbi:jdbi3-kotlin", version.ref = "jdbi" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 bcrypt = { module = "at.favre.lib:bcrypt", version.ref = "bcrypt" }
-
-
+dotenv = { module = "io.github.cdimascio:dotenv-kotlin", version.ref = "dotenv" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
