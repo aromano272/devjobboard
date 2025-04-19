@@ -1,5 +1,6 @@
 package com.andreromano.devjobboard.service
 
+import com.andreromano.devjobboard.service.templates.Template
 import io.github.cdimascio.dotenv.Dotenv
 import io.ktor.client.HttpClient
 import io.ktor.client.request.basicAuth
@@ -10,12 +11,13 @@ import io.ktor.http.isSuccess
 import io.ktor.util.logging.Logger
 
 interface EmailService {
-    suspend fun sendEmail(to: String, subject: String, htmlBody: String)
+    suspend fun sendEmail(to: String, subject: String, template: Template)
 }
 
 class MailgunEmailService(
     dotenv: Dotenv,
     private val httpClient: HttpClient,
+    private val emailTemplateRenderer: EmailTemplateRenderer,
     private val logger: Logger,
 ) : EmailService {
 
@@ -23,8 +25,10 @@ class MailgunEmailService(
     private val domain = dotenv["MAILGUN_DOMAIN"]
     private val fromEmail = "DevJobBoard <noreply@devjobboard.com>"
 
-    override suspend fun sendEmail(to: String, subject: String, htmlBody: String) {
+    override suspend fun sendEmail(to: String, subject: String, template: Template) {
         val url = "https://api.mailgun.net/v3/$domain/messages"
+
+        val htmlBody = emailTemplateRenderer.render(template)
 
         val response = httpClient.submitForm(
             url = url,

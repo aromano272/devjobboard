@@ -14,10 +14,14 @@ import com.andreromano.devjobboard.service.DefaultJobApplicationService
 import com.andreromano.devjobboard.service.DefaultJobService
 import com.andreromano.devjobboard.service.DefaultJwtService
 import com.andreromano.devjobboard.service.EmailService
+import com.andreromano.devjobboard.service.EmailTemplateRenderer
 import com.andreromano.devjobboard.service.JobApplicationService
 import com.andreromano.devjobboard.service.JobService
 import com.andreromano.devjobboard.service.JwtService
 import com.andreromano.devjobboard.service.MailgunEmailService
+import com.andreromano.devjobboard.service.MustacheEmailTemplateRenderer
+import com.github.mustachejava.DefaultMustacheFactory
+import com.github.mustachejava.MustacheFactory
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv
 import io.ktor.client.HttpClient
@@ -56,6 +60,11 @@ val appModule = module {
             }
         }
     }
+
+    single<MustacheFactory> {
+        DefaultMustacheFactory("templates")
+    }
+
 }
 
 fun databaseModule(application: Application) = module {
@@ -122,6 +131,7 @@ fun serviceModule(application: Application) = module {
             jobFavoriteDao = get(),
             userDao = get(),
             emailService = get(),
+            logger = application.environment.log,
         )
     }
 
@@ -129,7 +139,14 @@ fun serviceModule(application: Application) = module {
         MailgunEmailService(
             dotenv = get(),
             httpClient = get(),
+            emailTemplateRenderer = get(),
             logger = application.environment.log,
+        )
+    }
+
+    single<EmailTemplateRenderer> {
+        MustacheEmailTemplateRenderer(
+            mustacheFactory = get()
         )
     }
 

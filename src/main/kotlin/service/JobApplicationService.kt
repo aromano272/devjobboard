@@ -14,10 +14,14 @@ import com.andreromano.devjobboard.models.NotFoundException
 import com.andreromano.devjobboard.models.Requester
 import com.andreromano.devjobboard.models.UserRole
 import com.andreromano.devjobboard.models.toUser
+import com.andreromano.devjobboard.service.templates.NewJobApplicationReceivedNotificationForRecruiter
 import io.ktor.util.logging.Logger
 import io.ktor.util.logging.error
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 interface JobApplicationService {
     suspend fun create(requester: Requester, jobId: Int)
@@ -42,8 +46,20 @@ class DefaultJobApplicationService(
 
         jobApplicationDao.insert(requester.userId, jobId, JobApplicationStateEntity.PENDING)
 
+        val adminUser = userDao.findById(job.createdByUserId)
+        val template = NewJobApplicationReceivedNotificationForRecruiter(
+            recruiterName = adminUser?.username.orEmpty(),
+            applicantName = requester.username,
+            jobTitle = job.title,
+            applicationDate = DateTimeFormatter.ISO_LOCAL_DATE
+                .withZone(ZoneId.of("UTC"))
+                .format(Instant.now()),
+            jobLink = "TODO",
+            applicantEmail = "TODO",
+            resumeLink = "TODO"
+        )
         try {
-            emailService.sendEmail("andre.romano272@hotmail.com", "Test", "<h1>Test</h1>")
+            emailService.sendEmail("andre.romano272@hotmail.com", "Test", template)
         } catch (ex: Exception) {
             logger.error(ex)
         }
