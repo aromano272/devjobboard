@@ -1,41 +1,43 @@
 package com.andreromano.devjobboard.database
 
 import com.andreromano.devjobboard.database.models.JobFavoriteEntity
-import org.jdbi.v3.sqlobject.customizer.Bind
-import org.jdbi.v3.sqlobject.kotlin.RegisterKotlinMapper
-import org.jdbi.v3.sqlobject.statement.SqlQuery
-import org.jdbi.v3.sqlobject.statement.SqlUpdate
-import org.jetbrains.annotations.Blocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-@RegisterKotlinMapper(JobFavoriteEntity::class)
 interface JobFavoriteDao {
 
-    @Blocking
-    @SqlQuery("SELECT * FROM job_favorites WHERE user_id = :userId AND job_id = :jobId")
-    fun getById(
-        @Bind("userId") userId: Int,
-        @Bind("jobId") jobId: Int,
+    suspend fun getById(
+        userId: Int,
+        jobId: Int,
     ): JobFavoriteEntity?
 
-    @Blocking
-    @SqlQuery("SELECT * FROM job_favorites WHERE user_id = :userId")
-    fun getAllByUserId(@Bind("userId") userId: Int): List<JobFavoriteEntity>
+    suspend fun getAllByUserId(userId: Int): List<JobFavoriteEntity>
 
-    @Blocking
-    @SqlUpdate(
-        """
-        INSERT INTO job_favorites (user_id, job_id)
-        VALUES (:userId, :jobId)
-        ON CONFLICT DO NOTHING
-        """
-    )
-    fun insert(
-        @Bind("userId") userId: Int,
-        @Bind("jobId") jobId: Int,
+    suspend fun insert(
+        userId: Int,
+        jobId: Int,
     ): Int
 
-    @Blocking
-    @SqlUpdate("DELETE FROM job_favorites WHERE user_id = :userId AND job_id = :jobId")
-    fun delete(@Bind("userId") userId: Int, @Bind("jobId") jobId: Int): Int
+    suspend fun delete(userId: Int, jobId: Int): Int
 
+}
+
+class DefaultJobFavoriteDao(
+    private val db: JobFavoriteDb,
+) : JobFavoriteDao {
+    override suspend fun getById(userId: Int, jobId: Int): JobFavoriteEntity? = withContext(Dispatchers.IO) {
+        db.getById(userId, jobId)
+    }
+
+    override suspend fun getAllByUserId(userId: Int): List<JobFavoriteEntity> = withContext(Dispatchers.IO) {
+        db.getAllByUserId(userId)
+    }
+
+    override suspend fun insert(userId: Int, jobId: Int): Int = withContext(Dispatchers.IO) {
+        db.insert(userId, jobId)
+    }
+
+    override suspend fun delete(userId: Int, jobId: Int): Int = withContext(Dispatchers.IO) {
+        db.delete(userId, jobId)
+    }
 }

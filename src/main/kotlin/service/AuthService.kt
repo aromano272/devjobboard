@@ -11,15 +11,15 @@ import java.time.Instant
 import java.util.*
 
 interface AuthService {
-    fun registerAndLogin(
+    suspend fun registerAndLogin(
         username: String,
         email: String,
         password: String,
         isAdmin: Boolean
     ): Tokens
-    fun login(username: String, password: String): Tokens
-    fun refreshToken(refreshToken: String): Tokens
-    fun logout(username: String, refreshToken: String)
+    suspend fun login(username: String, password: String): Tokens
+    suspend fun refreshToken(refreshToken: String): Tokens
+    suspend fun logout(username: String, refreshToken: String)
 }
 
 class DefaultAuthService(
@@ -28,7 +28,7 @@ class DefaultAuthService(
     private val refreshTokenDao: RefreshTokenDao,
 ) : AuthService {
 
-    override fun registerAndLogin(
+    override suspend fun registerAndLogin(
         username: String,
         email: String,
         password: String,
@@ -42,7 +42,7 @@ class DefaultAuthService(
         return login(username, password)
     }
 
-    override fun login(username: String, password: String): Tokens {
+    override suspend fun login(username: String, password: String): Tokens {
         val user = userDao.findByUsername(username) ?: throw NotFoundException("couldn't find user")
         val storedPassHash = user.passwordHash
         val result = BCrypt.verifyer().verify(password.toCharArray(), storedPassHash)
@@ -60,7 +60,7 @@ class DefaultAuthService(
         }
     }
 
-    override fun refreshToken(refreshToken: String): Tokens {
+    override suspend fun refreshToken(refreshToken: String): Tokens {
         val stored = refreshTokenDao.findByToken(refreshToken)
             ?: throw UnauthorizedException("couldn't find refresh token")
         val user = userDao.findById(stored.userId) ?: throw NotFoundException("couldn't find user")
@@ -78,7 +78,7 @@ class DefaultAuthService(
         return Tokens(newAccessToken, newRefreshToken)
     }
 
-    override fun logout(username: String, refreshToken: String) {
+    override suspend fun logout(username: String, refreshToken: String) {
         val stored =
             refreshTokenDao.findByToken(refreshToken) ?: throw UnauthorizedException("couldn't find refresh token")
 

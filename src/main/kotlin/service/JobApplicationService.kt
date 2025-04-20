@@ -19,8 +19,6 @@ import com.andreromano.devjobboard.service.templates.NewJobApplicationReceivedNo
 import com.andreromano.devjobboard.service.templates.NewJobApplicationReceivedNotificationForRecruiter
 import io.ktor.util.logging.Logger
 import io.ktor.util.logging.error
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -29,8 +27,8 @@ interface JobApplicationService {
     suspend fun create(requester: Requester, jobId: Int)
     suspend fun approve(requester: Requester, jobApplicationId: Int)
     suspend fun reject(requester: Requester, jobApplicationId: Int)
-    fun getAllForRequester(requester: Requester, state: JobApplicationState?): List<JobApplication>
-    fun getAllByJobId(requester: Requester, jobId: Int, state: JobApplicationState?): List<JobApplication>
+    suspend fun getAllForRequester(requester: Requester, state: JobApplicationState?): List<JobApplication>
+    suspend fun getAllByJobId(requester: Requester, jobId: Int, state: JobApplicationState?): List<JobApplication>
 }
 
 class DefaultJobApplicationService(
@@ -41,7 +39,7 @@ class DefaultJobApplicationService(
     private val userDao: UserDao,
     private val emailService: EmailService,
 ) : JobApplicationService {
-    override suspend fun create(requester: Requester, jobId: Int) = withContext(Dispatchers.IO) {
+    override suspend fun create(requester: Requester, jobId: Int) {
         if (requester.role != UserRole.USER) throw ForbiddenException("Admins can't apply for jobs")
         val job = jobDao.getById(jobId) ?: throw NotFoundException("Job not found")
         val jobApplications = jobApplicationDao.getAll(requester.userId, jobId)
@@ -83,13 +81,13 @@ class DefaultJobApplicationService(
         }
     }
 
-    override suspend fun approve(requester: Requester, jobApplicationId: Int) = withContext(Dispatchers.IO) {
+    override suspend fun approve(requester: Requester, jobApplicationId: Int) {
         if (requester.role != UserRole.ADMIN) throw ForbiddenException("Only admins can approve applications")
         val jobApplication = jobApplicationDao.getById(jobApplicationId) ?: throw NotFoundException("Job application not found")
         val job = jobDao.getById(jobApplication.jobId) ?: throw NotFoundException("Job not found")
 
         val updated = jobApplicationDao.updateState(jobApplicationId, JobApplicationStateEntity.APPROVED)
-        if (updated == 0) return@withContext
+        if (updated == 0) return
 
         val template = JobApplicationApproved(
             applicantName = requester.username,
@@ -109,13 +107,13 @@ class DefaultJobApplicationService(
         }
     }
 
-    override suspend fun reject(requester: Requester, jobApplicationId: Int) = withContext(Dispatchers.IO) {
+    override suspend fun reject(requester: Requester, jobApplicationId: Int) {
         if (requester.role != UserRole.ADMIN) throw ForbiddenException("Only admins can approve applications")
         val jobApplication = jobApplicationDao.getById(jobApplicationId) ?: throw NotFoundException("Job application not found")
         val job = jobDao.getById(jobApplication.jobId) ?: throw NotFoundException("Job not found")
 
         val updated = jobApplicationDao.updateState(jobApplicationId, JobApplicationStateEntity.REJECTED)
-        if (updated == 0) return@withContext
+        if (updated == 0) return
 
         val template = JobApplicationRejected(
             applicantName = requester.username,
@@ -134,7 +132,7 @@ class DefaultJobApplicationService(
         }
     }
 
-    override fun getAllForRequester(requester: Requester, state: JobApplicationState?): List<JobApplication> {
+    override suspend fun getAllForRequester(requester: Requester, state: JobApplicationState?): List<JobApplication> {
         if (requester.role != UserRole.USER) throw ForbiddenException("Admins can't apply for jobs")
         val applications = jobApplicationDao.getAll(requester.userId, state = state?.toEntity())
 
@@ -157,7 +155,7 @@ class DefaultJobApplicationService(
         }
     }
 
-    override fun getAllByJobId(
+    override suspend fun getAllByJobId(
         requester: Requester,
         jobId: Int,
         state: JobApplicationState?

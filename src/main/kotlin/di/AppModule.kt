@@ -1,10 +1,20 @@
 package com.andreromano.devjobboard.di
 
+import com.andreromano.devjobboard.database.DefaultJobApplicationDao
+import com.andreromano.devjobboard.database.DefaultJobDao
+import com.andreromano.devjobboard.database.DefaultJobFavoriteDao
+import com.andreromano.devjobboard.database.DefaultRefreshTokenDao
+import com.andreromano.devjobboard.database.DefaultUserDao
 import com.andreromano.devjobboard.database.JobApplicationDao
+import com.andreromano.devjobboard.database.JobApplicationDb
 import com.andreromano.devjobboard.database.JobDao
+import com.andreromano.devjobboard.database.JobDb
 import com.andreromano.devjobboard.database.JobFavoriteDao
+import com.andreromano.devjobboard.database.JobFavoriteDb
 import com.andreromano.devjobboard.database.RefreshTokenDao
+import com.andreromano.devjobboard.database.RefreshTokenDb
 import com.andreromano.devjobboard.database.UserDao
+import com.andreromano.devjobboard.database.UserDb
 import com.andreromano.devjobboard.database.createHikariDataSource
 import com.andreromano.devjobboard.database.createJdbi
 import com.andreromano.devjobboard.database.runMigrations
@@ -74,29 +84,59 @@ fun databaseModule(application: Application) = module {
             .createJdbi()
     }
 
-    single<JobDao> {
+    single<JobDb> {
         val jdbi: Jdbi = get()
-        jdbi.onDemand(JobDao::class.java)
+        jdbi.onDemand(JobDb::class.java)
+    }
+
+    single<JobDao> {
+        DefaultJobDao(
+            db = get()
+        )
+    }
+
+    single<JobApplicationDb> {
+        val jdbi: Jdbi = get()
+        jdbi.onDemand(JobApplicationDb::class.java)
     }
 
     single<JobApplicationDao> {
+        DefaultJobApplicationDao(
+            db = get()
+        )
+    }
+
+    single<JobFavoriteDb> {
         val jdbi: Jdbi = get()
-        jdbi.onDemand(JobApplicationDao::class.java)
+        jdbi.onDemand(JobFavoriteDb::class.java)
     }
 
     single<JobFavoriteDao> {
+        DefaultJobFavoriteDao(
+            db = get()
+        )
+    }
+
+    single<UserDb> {
         val jdbi: Jdbi = get()
-        jdbi.onDemand(JobFavoriteDao::class.java)
+        jdbi.onDemand(UserDb::class.java)
     }
 
     single<UserDao> {
+        DefaultUserDao(
+            db = get()
+        )
+    }
+
+    single<RefreshTokenDb> {
         val jdbi: Jdbi = get()
-        jdbi.onDemand(UserDao::class.java)
+        jdbi.onDemand(RefreshTokenDb::class.java)
     }
 
     single<RefreshTokenDao> {
-        val jdbi: Jdbi = get()
-        jdbi.onDemand(RefreshTokenDao::class.java)
+        DefaultRefreshTokenDao(
+            db = get()
+        )
     }
 }
 
