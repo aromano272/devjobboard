@@ -1,23 +1,40 @@
 package com.andreromano.devjobboard.routes
 
 import com.andreromano.devjobboard.models.BadRequestException
+import com.andreromano.devjobboard.models.JobListing
 import com.andreromano.devjobboard.models.requester
 import com.andreromano.devjobboard.models.requireRequester
+import com.andreromano.devjobboard.routes.models.GetJobListingsRequest
 import com.andreromano.devjobboard.routes.models.JobListingInsertRequest
 import com.andreromano.devjobboard.routes.models.toGetJobListingsRequest
 import com.andreromano.devjobboard.service.JobService
-import io.ktor.http.*
-import io.ktor.server.auth.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.github.smiley4.ktoropenapi.get
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.auth.authenticate
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
 
 fun Route.jobRoutes(
     jobService: JobService,
 ) {
     route("/jobs") {
         authenticate(optional = true) {
-            get {
+            get({
+                description = "Get job listings"
+                request {
+                    body<GetJobListingsRequest>()
+                }
+                response {
+                    HttpStatusCode.OK to {
+                        body<List<JobListing>>()
+                    }
+                }
+            }) {
                 val requester = call.requester()
                 val request = call.toGetJobListingsRequest()
                 val jobs = jobService.getAll(requester, request)

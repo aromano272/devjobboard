@@ -17,6 +17,7 @@ application {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
@@ -50,6 +51,9 @@ dependencies {
     implementation(libs.flyway.database.postgresql)
     implementation(libs.bcrypt)
     implementation(libs.dotenv)
+    implementation(libs.openapi.generator)
+    implementation(libs.swagger.ui)
+    implementation(libs.schema.kenerator.swagger)
 
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.kotlin.test.junit)
