@@ -1,6 +1,5 @@
 package com.andreromano.devjobboard.service
 
-import at.favre.lib.crypto.bcrypt.BCrypt
 import com.andreromano.devjobboard.database.RefreshTokenDao
 import com.andreromano.devjobboard.database.UserDao
 import com.andreromano.devjobboard.models.ConflictException
@@ -26,6 +25,7 @@ class DefaultAuthService(
     private val jwtService: JwtService,
     private val userDao: UserDao,
     private val refreshTokenDao: RefreshTokenDao,
+    private val passwordService: PasswordService,
 ) : AuthService {
 
     override suspend fun registerAndLogin(
@@ -36,7 +36,7 @@ class DefaultAuthService(
     ): Tokens {
         if (userDao.findByUsername(username) != null) throw ConflictException("username already exists")
 
-        val hashedPassword = BCrypt.withDefaults().hashToString(12, password.toCharArray())
+        val hashedPassword = passwordService.hash(password)
         userDao.insert(username, email, isAdmin, hashedPassword)
 
         return login(username, password)
@@ -45,9 +45,9 @@ class DefaultAuthService(
     override suspend fun login(username: String, password: String): Tokens {
         val user = userDao.findByUsername(username) ?: throw NotFoundException("couldn't find user")
         val storedPassHash = user.passwordHash
-        val result = BCrypt.verifyer().verify(password.toCharArray(), storedPassHash)
+        val isValid = passwordService.verify(password, storedPassHash)
 
-        return if (result.verified) {
+        return if (isValid) {
             val access = jwtService.create(user.id, username, user.isAdmin)
             val refresh = UUID.randomUUID().toString()
 

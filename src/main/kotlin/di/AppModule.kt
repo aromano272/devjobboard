@@ -1,5 +1,6 @@
 package com.andreromano.devjobboard.di
 
+import at.favre.lib.crypto.bcrypt.BCrypt
 import com.andreromano.devjobboard.database.DefaultJobApplicationDao
 import com.andreromano.devjobboard.database.DefaultJobDao
 import com.andreromano.devjobboard.database.DefaultJobFavoriteDao
@@ -23,6 +24,7 @@ import com.andreromano.devjobboard.service.DefaultAuthService
 import com.andreromano.devjobboard.service.DefaultJobApplicationService
 import com.andreromano.devjobboard.service.DefaultJobService
 import com.andreromano.devjobboard.service.DefaultJwtService
+import com.andreromano.devjobboard.service.DefaultPasswordService
 import com.andreromano.devjobboard.service.EmailService
 import com.andreromano.devjobboard.service.EmailTemplateRenderer
 import com.andreromano.devjobboard.service.JobApplicationService
@@ -30,6 +32,7 @@ import com.andreromano.devjobboard.service.JobService
 import com.andreromano.devjobboard.service.JwtService
 import com.andreromano.devjobboard.service.MailgunEmailService
 import com.andreromano.devjobboard.service.MustacheEmailTemplateRenderer
+import com.andreromano.devjobboard.service.PasswordService
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.MustacheFactory
 import io.github.cdimascio.dotenv.Dotenv
@@ -73,6 +76,14 @@ val appModule = module {
 
     single<MustacheFactory> {
         DefaultMustacheFactory("templates")
+    }
+
+    single<BCrypt.Hasher> {
+        BCrypt.withDefaults()
+    }
+
+    single<BCrypt.Verifyer> {
+        BCrypt.verifyer()
     }
 
 }
@@ -148,11 +159,16 @@ fun serviceModule(application: Application) = module {
         )
     }
 
+    single<PasswordService> {
+        DefaultPasswordService()
+    }
+
     single<AuthService> {
         DefaultAuthService(
             jwtService = get(),
             userDao = get(),
             refreshTokenDao = get(),
+            passwordService = get(),
         )
     }
 

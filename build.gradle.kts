@@ -56,5 +56,7 @@ dependencies {
     implementation(libs.schema.kenerator.swagger)
 
     testImplementation(libs.ktor.server.test.host)
+    testImplementation(libs.ktor.client.mock)
     testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.mockk)
 }

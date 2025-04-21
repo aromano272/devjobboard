@@ -160,7 +160,7 @@ class DefaultJobApplicationService(
         jobId: Int,
         state: JobApplicationState?
     ): List<JobApplication> {
-        if (requester.role != UserRole.USER) throw ForbiddenException("Only admins can access this")
+        if (requester.role != UserRole.ADMIN) throw ForbiddenException("Only admins can access this")
         val job = jobDao.getById(jobId)?.toDomain(favorite = false, applied = false) ?: throw NotFoundException("Job not found")
         val applications = jobApplicationDao.getAll(jobId = jobId, state = state?.toEntity())
         val users = userDao.getAllByIds(applications.map { it.userId })
